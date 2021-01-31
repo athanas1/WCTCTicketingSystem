@@ -51,6 +51,9 @@ namespace WCTCTicketingSystem
                     int id = 0;
                     int x = 0;
                     string answer;
+                    //I tried using a normal string array for this but found trying to increase the size of it to be a pain.
+                    //Is there a better way to do this without List or was using List correct?
+                    //-------------
                     List<string> watchers = new List<string>();
                     string ticketid = "";
                     
@@ -103,7 +106,8 @@ namespace WCTCTicketingSystem
                         string assigned = Console.ReadLine();
                         // incrementing each id
                         id++;
-                        
+                        //-----
+                        //This didn't pan out
                         //Asking how many people are watching the ticket then saving it 
                         // System.Console.WriteLine("How many people are watching this ticket?");
                         // int numb = Int32.Parse(Console.ReadLine());
