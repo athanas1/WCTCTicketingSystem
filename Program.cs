@@ -16,7 +16,7 @@ namespace WCTCTicketingSystem
 
                 //Asks the user what to do
                 Console.WriteLine("1) Read the data from the file");
-                Console.WriteLine("2) Create a file from data");
+                Console.WriteLine("2) Add a ticket to data");
                 Console.WriteLine("Press any other key to exit the application");
 
                 //getting user input
@@ -34,7 +34,8 @@ namespace WCTCTicketingSystem
                             //converting each string to an array with split with a ,
                             string[] arr = line.Split(',');
                             //output the array?
-                            Console.WriteLine(arr.ToString());
+                            string str = String.Join(",", arr);
+                            Console.WriteLine(str);
 
                         }
                         sr.Close();
@@ -47,20 +48,35 @@ namespace WCTCTicketingSystem
                 } else if (choice == "2")
                 {
                     //increment each ticket in for loop for unique id's?
+                    int id = 0;
                     int x = 0;
-                    int id = 1;
                     string answer;
                     List<string> watchers = new List<string>();
+                    string ticketid = "";
                     
                     //To get ID's that increment we need to be able to read the last ID generated
-                    //StreamReader sr = new StreamReader(file);
-                    //Maybe I need to do something like this in the
-
+                    StreamReader sr = new StreamReader(file);
+                    while(!sr.EndOfStream){
+                        //this goes through all strings in the 0 place on the array and grabs the last one entered
+                        string line = sr.ReadLine();
+                        string[] arr = line.Split(",");
+                        //setting the ticketid string to the whatever the latest value is in the array
+                        ticketid = arr[0];
+                        //checking if ticket id is the string or an int value, had to do this because if I try to parse int "TicketID" shit blew up
+                        if(ticketid == "TicketID"){
+                            id = 0;
+                        } else{
+                            id = Int32.Parse(ticketid);
+                        }
+                    }
+                    sr.Close();
                      //Creating a file with the data
-                    StreamWriter sw = new StreamWriter(file);
+                    StreamWriter sw = new StreamWriter(file, true);
                     //Setting up the top end of the ticket
-                    sw.WriteLine("TicketID,Summary,Status,Priority,Submitter,Assigned,Watching");
-
+                    //Checks to make sure the file is empty to post header, otherwise skips it
+                    if( new FileInfo( file ).Length == 0){
+                        sw.WriteLine("TicketID,Summary,Status,Priority,Submitter,Assigned,Watching");
+                    }
 
                     for(int i = 0; i < 10; i++)
                     {
@@ -71,21 +87,23 @@ namespace WCTCTicketingSystem
                         //if answer is anything else besides Y break if chain
                         if( response != "Y"){ break;}
                         //asking entry for all all fields and then saving it to a string 
-                        // System.Console.WriteLine("Enter a small description of the ticket issue");
-                        // string summary = Console.ReadLine();
+                        System.Console.WriteLine("Enter a small description of the ticket issue");
+                        string summary = Console.ReadLine();
                         
-                        // System.Console.WriteLine("Enter status of ticket");
-                        // string status = Console.ReadLine();
+                        System.Console.WriteLine("Enter status of ticket");
+                        string status = Console.ReadLine();
                         
-                        // System.Console.WriteLine("Enter ticket priority");
-                        // string prio = Console.ReadLine();
+                        System.Console.WriteLine("Enter ticket priority");
+                        string prio = Console.ReadLine();
 
-                        // System.Console.WriteLine("Enter who is submitted the ticket");
-                        // string submitter = Console.ReadLine();
+                        System.Console.WriteLine("Enter who is submitted the ticket");
+                        string submitter = Console.ReadLine();
 
-                        // System.Console.WriteLine("Enter who is assigned to the ticket");
-                        // string assigned = Console.ReadLine();
-
+                        System.Console.WriteLine("Enter who is assigned to the ticket");
+                        string assigned = Console.ReadLine();
+                        // incrementing each id
+                        id++;
+                        
                         //Asking how many people are watching the ticket then saving it 
                         // System.Console.WriteLine("How many people are watching this ticket?");
                         // int numb = Int32.Parse(Console.ReadLine());
@@ -95,7 +113,6 @@ namespace WCTCTicketingSystem
                         // }
                         do
                         {
-                            
                             System.Console.WriteLine("Who is watching this ticket?");
                             string output = Console.ReadLine();
                             watchers.Add(output);
@@ -103,9 +120,9 @@ namespace WCTCTicketingSystem
                             System.Console.WriteLine("Is there anyone else watching this ticket? (Y/N)");
                             answer = Console.ReadLine().ToUpper();
                         } while (answer == "Y");
-
-                        string str = String.Join("|", watchers);
-                        System.Console.WriteLine(str);
+                        string watcher = String.Join("|", watchers);
+                        sw.WriteLine("{0},{1},{2},{3},{4},{5},{6}", id, summary, status, prio, submitter, assigned, watcher);
+                        
                     }
                     sw.Close();
                 }
